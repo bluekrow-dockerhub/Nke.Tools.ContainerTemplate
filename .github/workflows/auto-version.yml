@@ -1,0 +1,29 @@
+name: Auto-Versioning
+
+on: 
+  push:
+    branches: 
+      - master
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'README.md'
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run a multi-line script
+      run: |
+        v1=$(cat VERSION)
+        echo v1: $v1
+        v2=$(( ($(date +%y%m%d)) ))
+        echo v2: $v2
+        v3=$(( ($(date +%H | bc) * 3600) + ($(date +%M | bc) * 60) + ($(date +%S | bc) * 1) ))
+        echo v3: $v3
+        ver=v$v1.$v2.$v3
+        echo ver: $ver
+        git tag $ver
+        git push origin $ver
+        echo Autoversioning done, Tag produced
+        
